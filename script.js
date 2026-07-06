@@ -58,6 +58,9 @@ oceanSprite.src = "sprites/oceanSprite.png"
 const repairingWellSprite = new Image();
 repairingWellSprite.src = "sprites/repairingWell.png"
 
+const jerrycanSprite = new Image();
+jerrycanSprite.src = "sprites/jerrycan.png"
+
 
 //SFX Assets
 const jumpSound = new Audio(
@@ -270,6 +273,18 @@ const waterDrops = [
 
 ];
 
+//jerry can
+
+const jerrycan = [
+    {
+        x: 5200,
+        y: canvas.height - 300,
+        width: 64,
+        height: 64,
+        collected: false
+    },   
+]
+
 //PLATFORMS 
 const platforms = [
 
@@ -327,14 +342,14 @@ const PLATFORM_GAP = 150;
 const grassTile = [
    {
        x: 0,
-       y: 500,
+       y:500,
        width: 64,
        height: 64,
 
    },
       {
        x: 64,
-       y:500,
+       y: 500,
        width: 64,
        height: 64,
 
@@ -416,7 +431,6 @@ const grassTile = [
         height: 64,
        
     },
-       
     {
         x: 832,
         y: 500,
@@ -424,50 +438,48 @@ const grassTile = [
         height: 64,
        
     },
-        {
+    {
         x: 896,
         y: 500,
         width: 64,
         height: 64,
        
     },
-        {
+    {
         x: 960,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1024,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },    
+    {
         x: 1088,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1152,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1216,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
-        x: 1280,
-        y: 500,
-        width: 64,
-        height: 64,
-       
-    },
+    },           
 ]
 
 // broken well
@@ -750,6 +762,22 @@ floatingPlatforms.forEach(platform => {
     }
 });
 
+// jerry can 
+
+    jerrycan.forEach(jerrycan => {
+
+    if(!jerrycan.collected){
+
+        ctx.drawImage(
+            jerrycanSprite,
+            jerrycan.x,
+            jerrycan.y,
+            jerrycan.width,
+            jerrycan.height
+        );
+
+    }
+});
 
 /**========GAME Loss CONDITION===========
  * ===================================== */
@@ -872,7 +900,7 @@ if(gameState === "loss"){
 if(gameState === "win"){
 
     ctx.fillStyle = "rgba(0,0,0,.75)";
-
+    ctx.textAlign = "center";
     ctx.fillRect(
         0,
         0,
@@ -885,17 +913,25 @@ if(gameState === "win"){
     ctx.font = "48px Arial";
 
     ctx.fillText(
-        "Village Water Restored!",
-        canvas.width/2 - 220,
+        "The village water has been restored!",
+        canvas.width/2,
         canvas.height/2
     );
     ctx.font = "24px Arial";
 
     ctx.fillText(
         "Press R to Restart",
-        canvas.width/2 - 100,
+        canvas.width/2,
         canvas.height/2 + 50
     );
+        ctx.font = "12px Arial";
+
+    ctx.fillText(
+        "© brought to you by Charity Water",
+        canvas.width/2,
+        canvas.height/2 + 150
+    );
+    ctx.textAlign = "left"
 
     return;
 }
@@ -1067,7 +1103,39 @@ if(!onPlatform){
 
 }
         
-       
+      //jerrycan
+
+    jerrycan.forEach(jerrycan => {
+
+        jerrycan.x -= worldSpeed     ;
+    if (jerrycan.x < -50){
+        jerrycan.x = canvas.width + 1000;
+        jerrycan.collected = false;
+    }
+
+    if(
+        !jerrycan.collected &&
+
+        player.x < jerrycan.x + jerrycan.width &&
+        player.x + player.width > jerrycan.x &&
+
+        player.y < jerrycan.y + jerrycan.height &&
+        player.y + player.height > jerrycan.y
+    ){
+
+        jerrycan.collected = true;
+
+
+        coinCollect.currentTime = 0;
+        coinCollect.play();
+         
+        waterCollected++;
+        peopleHelped += 6;
+
+        console.log("Collected!");
+
+    }
+});     
    
     //WATER 
 
