@@ -58,14 +58,10 @@ const repairingWellSprite = new Image();
 repairingWellSprite.src = "sprites/repairingWell.png"
 
 const jerrycanSprite = new Image();
-<<<<<<< HEAD
 jerrycanSprite.src = "sprites/jerrycan-sheet.png"
 
 const enemySprite = new Image();
 enemySprite.src = "sprites/cactus.png"
-=======
-jerrycanSprite.src = "sprites/jerrycan.png"
->>>>>>> 63b76c51e7da4b472d023d37f6fd74be1f74a03b
 
 
 //SFX Assets
@@ -340,11 +336,7 @@ const waterDrops = [
 
 //jerry can
 
-<<<<<<< HEAD
 const jerrycan= [
-=======
-const jerrycan = [
->>>>>>> 63b76c51e7da4b472d023d37f6fd74be1f74a03b
     {
         x: 5200,
         y: canvas.height - 300,
@@ -845,7 +837,6 @@ floatingPlatforms.forEach(platform => {
 
     jerrycan.forEach(jerrycan => {
 
-<<<<<<< HEAD
 
   
 
@@ -876,21 +867,12 @@ floatingPlatforms.forEach(platform => {
             0,
             frameWidth,
             frameHeight,
-=======
-    if(!jerrycan.collected){
-
-        ctx.drawImage(
->>>>>>> 63b76c51e7da4b472d023d37f6fd74be1f74a03b
             jerrycanSprite,
             jerrycan.x,
             jerrycan.y,
             jerrycan.width,
             jerrycan.height
-<<<<<<< HEAD
         );*/
-=======
-        );
->>>>>>> 63b76c51e7da4b472d023d37f6fd74be1f74a03b
 
     }
 });
@@ -1091,9 +1073,6 @@ if(gameState === "win"){
     
     ctx.font = "12px Arial";
         ctx.fillText(
-        ctx.font = "12px Arial";
-
-    ctx.fillText(
         "© brought to you by Charity Water",
         canvas.width/2,
         canvas.height/2 + 150
@@ -1297,7 +1276,6 @@ if(!onPlatform){
         jerrycan.x = canvas.width + 1000;
         jerrycan.collected = false;
     }
-<<<<<<< HEAD
     jerryTimer++;
 
         if(jerryTimer > 5){
@@ -1310,9 +1288,6 @@ if(!onPlatform){
 
             jerryTimer = 0;
         }
-=======
-
->>>>>>> 63b76c51e7da4b472d023d37f6fd74be1f74a03b
     if(
         !jerrycan.collected &&
 
