@@ -13,8 +13,7 @@ let distanceTraveled = 0;
 let wellVisible = false;
 let gameState = "menu";
 let repairingWell = false;
-
-
+let difficulty = "easy";
 
 
 
@@ -58,6 +57,12 @@ oceanSprite.src = "sprites/oceanSprite.png"
 const repairingWellSprite = new Image();
 repairingWellSprite.src = "sprites/repairingWell.png"
 
+const jerrycanSprite = new Image();
+jerrycanSprite.src = "sprites/jerrycan-sheet.png"
+
+const enemySprite = new Image();
+enemySprite.src = "sprites/cactus.png"
+
 
 //SFX Assets
 const jumpSound = new Audio(
@@ -84,6 +89,14 @@ const totalFrames = 3; // frame count
 
 const frameWidth = 32;
 const frameHeight = 32;
+
+//jerrycan animation
+let jerryFrame = 0;
+let jerryTimer = 0;
+const jerryFrames = 12;
+
+const JFrameWidth = 128;
+const JFrameHeight = 128;
 
 
 
@@ -166,6 +179,12 @@ document.addEventListener("keydown", (e) => {
     ){
         location.reload();
     }
+    if(e.code ==="KeyD"){
+
+        window.open(
+            "https://www.charitywater.org/?utm_source=adwords&utm_medium=paid-cpc&utm_campaign=bof-spring-usrow&utm_term=GA_BOFU_Brand_PD_SRC_BRN_CVR_GEN_USA_MTD_V1&utm_content=branded&gad_source=1&gad_campaignid=23574816131&gbraid=0AAAAADNj5D-iiPdmTsGz6POqabzei-ISy&gclid=Cj0KCQjw4JbTBhCoARIsALWUaBu0VmBrxTFjn6JSf1DCsdwdZTPQpHkP0BNg3B3rCg5d7e6pjEEswUsaAoTUEALw_wcB"
+        );
+    }
     if(
         gameState === "menu" &&
         e.code === "Space"
@@ -175,12 +194,43 @@ document.addEventListener("keydown", (e) => {
         return;
     }
 
+if(gameState === "menu"){
+
+    if(e.code === "KeyE"){
+
+        difficulty = "easy";
+        worldSpeed = 6;
+        startGame();
+
+    }
+
+    if(e.code === "KeyM"){
+
+        difficulty = "Medium";
+        worldSpeed = 8;
+        startGame()
+    }
+
+    if(e.code === "KeyH"){
+
+        difficulty = "hard";
+        worldSpeed = 10;
+        startGame();
+
+    }
+
+
+
+}
+
+
     
     if(
         gameState !== "playing"
     ){
         return;
     }
+
     if(
         gameState === "playing" &&
         e.code === "Space" &&
@@ -188,7 +238,7 @@ document.addEventListener("keydown", (e) => {
     )
 
     {
-
+//creates jump and double jump
         if(player.jumpCount === 0){
 
             jumpSound.currentTime = 0;
@@ -209,6 +259,20 @@ document.addEventListener("keydown", (e) => {
     }
 
 });
+
+//Enemy
+
+const enemy = {
+
+    x:1800,
+
+    y:canvas.height-190,
+
+    width:96,
+
+    height:128
+
+};
 
 //WATER DROPS
 const waterDrops = [
@@ -270,6 +334,18 @@ const waterDrops = [
 
 ];
 
+//jerry can
+
+const jerrycan= [
+    {
+        x: 5200,
+        y: canvas.height - 300,
+        width: 64,
+        height: 64,
+        collected: false
+    },   
+]
+
 //PLATFORMS 
 const platforms = [
 
@@ -311,11 +387,11 @@ const floatingPlatforms = [
     collected: false
 },
 {
-    x: 3850,
+/*    x: 3850,
     y: 300,
     width: 64,
     height: 364,
-    collected: false
+    collected: false */
 }
 
 
@@ -327,14 +403,14 @@ const PLATFORM_GAP = 150;
 const grassTile = [
    {
        x: 0,
-       y: 500,
+       y:500,
        width: 64,
        height: 64,
 
    },
       {
        x: 64,
-       y:500,
+       y: 500,
        width: 64,
        height: 64,
 
@@ -416,7 +492,6 @@ const grassTile = [
         height: 64,
        
     },
-       
     {
         x: 832,
         y: 500,
@@ -424,50 +499,48 @@ const grassTile = [
         height: 64,
        
     },
-        {
+    {
         x: 896,
         y: 500,
         width: 64,
         height: 64,
        
     },
-        {
+    {
         x: 960,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1024,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },    
+    {
         x: 1088,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1152,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
+    },
+    {
         x: 1216,
         y: 500,
         width: 64,
         height: 64,
        
-    },    {
-        x: 1280,
-        y: 500,
-        width: 64,
-        height: 64,
-       
-    },
+    },           
 ]
 
 // broken well
@@ -490,7 +563,7 @@ function startGame(){
     wellVisible = false;
     repairingWell = false;
 
-    worldSpeed = 6;
+   
 
     player.x = 150;
     player.y = canvas.height - 200;
@@ -603,6 +676,16 @@ function draw(){
 
 });
     
+//enemy 
+
+
+    ctx.drawImage(
+        enemySprite,
+        enemy.x,
+        enemy.y,
+        enemy.width,
+        enemy.height,
+    );
 
 
 // clouds
@@ -750,6 +833,49 @@ floatingPlatforms.forEach(platform => {
     }
 });
 
+// jerry can 
+
+    jerrycan.forEach(jerrycan => {
+
+
+  
+
+    if(!jerrycan.collected){
+
+        ctx.drawImage(
+
+            jerrycanSprite,
+            jerryFrame * JFrameWidth,
+            0,
+
+            JFrameWidth,
+
+            JFrameHeight,
+
+            jerrycan.x,
+
+            jerrycan.y,
+
+            jerrycan.width,
+
+            jerrycan.height
+
+        );       
+
+      /*  ctx.drawImage(
+            currentFrame * frameWidth,
+            0,
+            frameWidth,
+            frameHeight,
+            jerrycanSprite,
+            jerrycan.x,
+            jerrycan.y,
+            jerrycan.width,
+            jerrycan.height
+        );*/
+
+    }
+});
 
 /**========GAME Loss CONDITION===========
  * ===================================== */
@@ -776,12 +902,23 @@ if(gameState === "loss"){
         canvas.height/2
     );
     ctx.font = "24px Arial";
-
+    ctx.fillText(
+        "Thanks for playing!",
+        canvas.width/2,
+        canvas.height/2 + 110
+    );
     ctx.fillText(
         "Press R to Restart",
         canvas.width/2 - 100,
         canvas.height/2 + 50
     );
+
+    ctx.fillText(
+        "Press D to Donate Today!",
+        canvas.width/2,
+        canvas.height/2 + 110
+    );
+
 
     return;
     }
@@ -860,8 +997,38 @@ if(gameState === "loss"){
 
     ctx.fillText(
         "Press SPACE to Start",
+
         canvas.width/2 - 120,
         380
+    );
+    
+    
+    ctx.font = "24px Arial";
+    ctx.fillText(
+        
+        "Easy",
+
+        canvas.width/2 - 160,
+      410
+    );
+
+
+    ctx.fillText(
+        
+       
+        "Medium",
+
+        canvas.width/2 -50,
+        410
+    );
+    ctx.fillText(
+        
+       
+        "Hard",
+
+        canvas.width/2 + 100,
+       410
+
     );
 
     }
@@ -872,7 +1039,7 @@ if(gameState === "loss"){
 if(gameState === "win"){
 
     ctx.fillStyle = "rgba(0,0,0,.75)";
-
+    ctx.textAlign = "center";
     ctx.fillRect(
         0,
         0,
@@ -885,17 +1052,32 @@ if(gameState === "win"){
     ctx.font = "48px Arial";
 
     ctx.fillText(
-        "Village Water Restored!",
-        canvas.width/2 - 220,
+        "The village water has been restored!",
+        canvas.width/2,
         canvas.height/2
     );
     ctx.font = "24px Arial";
 
     ctx.fillText(
         "Press R to Restart",
-        canvas.width/2 - 100,
+        canvas.width/2,
         canvas.height/2 + 50
     );
+    ctx.font = "18px Arial";
+    
+    ctx.fillText(
+        "Press D to Donate Today!",
+        canvas.width/2,
+        canvas.height/2 + 110
+    );
+    
+    ctx.font = "12px Arial";
+        ctx.fillText(
+        "© brought to you by Charity Water",
+        canvas.width/2,
+        canvas.height/2 + 150
+    );
+    ctx.textAlign = "left"
 
     return;
 }
@@ -943,12 +1125,30 @@ function gameLoop(){
         menumusic.play();
     draw();
 
+    if (menumusic.paused) {
+    menumusic.loop = true;
+    menumusic.volume = 0.3;
+    menumusic.play();
+}
+
     requestAnimationFrame(gameLoop);
 
     return;
     }
-    
-    
+
+  
+      //gameplay slowly gets harder 
+    if(difficulty === "hard"){
+        worldSpeed += .001;
+    }
+ 
+// Enemy
+
+
+    enemy.x -= worldSpeed;
+
+
+
 //distance clause
     distanceTraveled += worldSpeed;
 
@@ -1067,7 +1267,50 @@ if(!onPlatform){
 
 }
         
-       
+      //jerrycan
+
+    jerrycan.forEach(jerrycan => {
+
+        jerrycan.x -= worldSpeed     ;
+    if (jerrycan.x < -50){
+        jerrycan.x = canvas.width + 1000;
+        jerrycan.collected = false;
+    }
+    jerryTimer++;
+
+        if(jerryTimer > 5){
+            
+            jerryFrame++;
+
+            if (jerryFrame >= jerryFrames){
+                jerryFrame = 0;
+            }
+
+            jerryTimer = 0;
+        }
+    if(
+        !jerrycan.collected &&
+
+        player.x < jerrycan.x + jerrycan.width &&
+        player.x + player.width > jerrycan.x &&
+
+        player.y < jerrycan.y + jerrycan.height &&
+        player.y + player.height > jerrycan.y
+    ){
+
+        jerrycan.collected = true;
+
+
+        coinCollect.currentTime = 0;
+        coinCollect.play();
+         
+        waterCollected++;
+        peopleHelped += 6;
+
+        console.log("Collected!");
+
+    }
+});     
    
     //WATER 
 
@@ -1231,8 +1474,6 @@ floatingPlatforms.forEach(platform => {
 
     }
 })*/
-
-
 
 
 
